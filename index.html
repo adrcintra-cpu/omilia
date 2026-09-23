@@ -364,5 +364,17 @@ addEventListener('scroll',go,{passive:true});addEventListener('resize',go);run()
 b.addEventListener('click',()=>{v.controls=true;w.classList.add('playing');const p=v.play();p&&p.catch(()=>{w.classList.remove('playing')})});
 v.addEventListener('ended',()=>{w.classList.remove('playing');v.controls=false;v.load()});})();</script>
 <script>(()=>{const h=document.querySelector('#inicio'),w=h&&h.querySelector('.hero-wave'),t=h&&h.querySelector('.hero-inner h1');if(!w||!t)return;const f=()=>{w.style.setProperty('--wave-left',(t.getBoundingClientRect().left-h.getBoundingClientRect().left)+'px')};f();addEventListener('resize',f);document.fonts&&document.fonts.ready.then(f);})();</script>
+<script>(()=>{const hdr=()=>{const h=document.querySelector('.header');return h?h.getBoundingClientRect().height:0};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let anim=0;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const go=y=>{cancelAnimationFrame(anim);const start=scrollY,dist=y-start;if(reduce||Math.abs(dist)<2){scrollTo(0,y);return}
+const dur=Math.min(1400,Math.max(550,Math.abs(dist)*.45));let t0=null;const html=document.documentElement,prev=html.style.scrollBehavior;html.style.scrollBehavior='auto';
+const step=ts=>{t0??=ts;const p=Math.min(1,(ts-t0)/dur);scrollTo(0,start+dist*ease(p));if(p<1)anim=requestAnimationFrame(step);else html.style.scrollBehavior=prev};anim=requestAnimationFrame(step)};
+const stop=()=>cancelAnimationFrame(anim);addEventListener('wheel',stop,{passive:true});addEventListener('touchstart',stop,{passive:true});
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);
+if(!id){e.preventDefault();go(0);return}const el=document.getElementById(id);if(!el)return;e.preventDefault();
+const y=id==='inicio'?0:el.getBoundingClientRect().top+scrollY-hdr()+1;go(Math.max(0,y));
+if(a.closest('nav')){const m=document.querySelector('.menu');m&&m.setAttribute('aria-expanded','false');document.querySelector('.header')?.classList.remove('menu-open')}
+try{history.replaceState(null,'','#'+id)}catch(_){}});})();</script>
 </body>
 </html>
